@@ -25,7 +25,9 @@ And the api service is running on port 8080.
     To do so, you need to make a post requests to the api services. 
 ``` 
 
+
 *For calling the getFileContent api, you need to make a post request to the api service.*
+
 
 ```
     For example in python:
@@ -36,7 +38,9 @@ And the api service is running on port 8080.
         curl -X POST -H "Content-Type: application/json" -d '{"fileName": "go.sum"}' http://localhost:8080/get_file_content
 ``` 
 
+
 *For calling the hashFiles api is mush the same as the getFileContent api.*
+    
     
 ```
     For example in curl:
