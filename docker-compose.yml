@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./github_api
+    ports:
+      - "8080:8080"
+
+  init_api:
+    build: ./init_api
+    ports:
+      - "8081:8081"
