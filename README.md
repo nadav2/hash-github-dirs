@@ -28,6 +28,7 @@ And the api service is running on port 8080.
 
 *
 For calling the getFileContent api, you need to make a post request to the api service.
+
 *
 
 
@@ -43,6 +44,7 @@ For calling the getFileContent api, you need to make a post request to the api s
 
 *
 For calling the hashFiles api is mush the same as the getFileContent api.
+
 *
     
     
