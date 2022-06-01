@@ -13,11 +13,15 @@ And the api service is running on port 8080.
 
 ```
 To use the service make a post request to the initialize service.
-Examople of the json body:
-{
-    "ref": "google/go-github"
-}
+
+For example in python:
+    requests.post('http://localhost:8081/check_out_ref', json={'ref': 'google/go-github'})
+
+or in curl:
+    curl -X POST -H "Content-Type: application/json" -d '{"ref": "google/go-github"}' http://localhost:8081/check_out_ref
 ```
+
+
 
 ```
 You finished set up the service.
