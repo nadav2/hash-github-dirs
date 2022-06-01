@@ -7,11 +7,6 @@ then run the docker image with the following command:
    docker-compose up
 ```
 
-*Or if you have bash*
-
-```
-   sh build.sh
-```
 
 ```
 The initialize serviec is running on port 8081.
