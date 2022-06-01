@@ -9,7 +9,7 @@ then run the docker image with the following command:
 
 
 ```
-The initialize serviec is running on port 8081.
+The initialize service is running on port 8081.
 And the api service is running on port 8080.
 ```
 
