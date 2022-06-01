@@ -53,13 +53,10 @@ func getFileContent(fileName string) returnObject {
 		return apiDetails.handleError("The request to the initialize container failed")
 	}
 
-	// Declared an empty map interface
-	var result map[string]string
-
-	// Unmarshal or Decode the JSON to the interface.
-	err := json.Unmarshal([]byte(apiDetails.value), &result)
-	if err != nil {
-		return handleError("The data is invalid")
+	// convert the json string to a map
+	result, err := stringToJson(apiDetails.value)
+	if err != "" {
+		return handleError(err)
 	}
 
 	GitRef := result["gitRef"]
@@ -71,6 +68,19 @@ func getFileContent(fileName string) returnObject {
 	}
 
 	return request(url.value)
+}
+
+func stringToJson(jsonString string) (map[string]string, string) {
+	// Declared an empty map interface
+	var result map[string]string
+
+	// Unmarshal or Decode the JSON to the interface.
+	err := json.Unmarshal([]byte(jsonString), &result)
+	if err != nil {
+		return map[string]string{}, "The data is invalid"
+	}
+
+	return result, ""
 }
 
 // parseUrl parse the arguments and return the url to the row file
