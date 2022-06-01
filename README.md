@@ -7,12 +7,12 @@ then run the docker image with the following command:
 ```
 
 ```
-The initialize serviec is running on port 8081.
+The initialize service is running on port 8081.
 And the api service is running on port 8080.
 ```
 
 ```
-To use the service make a post request to the initialize service.
+To use the services first make a post request to the initialize service.
 
 For example in python:
     requests.post('http://localhost:8081/check_out_ref', json={'ref': 'google/go-github'})
@@ -26,7 +26,6 @@ or in curl:
 ```
 You finished set up the service.
 Now you can start sending api requests to the service.
-To do so, you need to make a post requests to the api services. 
 ``` 
 
 *For calling the getFileContent api, you need to make a post request to the api service.*
