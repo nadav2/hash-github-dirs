@@ -1,3 +1,4 @@
+## Installation ##
 ```
 First build the docker image with the following command:
     docker-compose build
@@ -7,12 +8,13 @@ then run the docker image with the following command:
 ```
 
 ```
-The initialize service is running on port 8081.
+The initialize serviec is running on port 8081.
 And the api service is running on port 8080.
 ```
 
+## Usage ##
 ```
-To use the services first make a post request to the initialize service.
+To use the service make a post request to the initialize service.
 
 For example in python:
     requests.post('http://localhost:8081/check_out_ref', json={'ref': 'google/go-github'})
@@ -28,7 +30,7 @@ You finished set up the service.
 Now you can start sending api requests to the service.
 ``` 
 
-*For calling the getFileContent api, you need to make a post request to the api service.*
+For calling the getFileContent api, you need to make a post request to the api service.
 
 ```
 For example in python:
@@ -39,8 +41,8 @@ Or in curl:
     curl -X POST -H "Content-Type: application/json" -d '{"fileName": "go.sum"}' http://localhost:8080/get_file_content
 ``` 
 
-*For calling the hashFiles api is mush the same as the getFileContent api.*
-    
+For calling the hashFiles api is mush the same as the getFileContent api.
+
 ```
 For example in curl:
     curl -X POST -H "Content-Type: application/json" -d '{"files": ["go.sum", "README.md"]}' http://localhost:8080/hash_files
