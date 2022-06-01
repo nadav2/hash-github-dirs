@@ -1,10 +1,10 @@
 ## Installation ##
 ```
 First build the docker image with the following command:
-- docker-compose build
+* docker-compose build
 
 then run the docker image with the following command:
-- docker-compose up
+* docker-compose up
 ```
 
 ```
