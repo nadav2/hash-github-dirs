@@ -85,7 +85,7 @@ func stringToJson(jsonString string) (map[string]string, string) {
 // parseUrl parse the arguments and return the url to the row file
 func parseUrl(girRef string, branch string, fileName string) returnObject {
 	if girRef == "" || branch == "" {
-		return handleError("Error: the gitRef or branch is not initialized")
+		return handleError("the gitRef or branch is not initialized")
 	}
 
 	details := strings.Split(girRef, "/")
@@ -119,7 +119,7 @@ func request(url string) returnObject {
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if string(body) == "404: Not Found" {
-		return handleError("Error: file not found")
+		return handleError("file not found")
 	}
 
 	if err != nil {
