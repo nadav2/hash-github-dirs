@@ -25,6 +25,10 @@ func CheckOutRef(path string, branch string) {
 	Branch = branch
 }
 
+func sendError(c *gin.Context, err string) {
+	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
+}
+
 // initApi initialize the api
 func initApi(c *gin.Context) {
 	var details ApiStartPoint
@@ -32,7 +36,7 @@ func initApi(c *gin.Context) {
 		CheckOutRef(details.Ref, details.Branch)
 		c.IndentedJSON(http.StatusCreated, details)
 	} else {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		sendError(c, "Invalid json")
 	}
 }
 
