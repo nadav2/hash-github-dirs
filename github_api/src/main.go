@@ -39,22 +39,11 @@ func sendError(c *gin.Context, err string) {
 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
 }
 
-func (r returnObject) handleError(err ...string) returnObject {
-
-	if len(err) == 1 {
-		return handleError(err[0])
-	} else if len(err) == 0 {
-		return handleError(r.error)
-	} else {
-		panic("Invalid arguments")
-	}
-
-}
 
 func getFileContent(fileName string) returnObject {
 	apiDetails := request("http://init_api:8081/details/")
 	if apiDetails.error != "" {
-		return apiDetails.handleError("The request to the initialize container failed")
+		return handleError(apiDetails.error)
 	}
 
 	// convert the json string to a map
@@ -68,7 +57,7 @@ func getFileContent(fileName string) returnObject {
 
 	url := parseUrl(GitRef, Branch, fileName)
 	if url.error != "" {
-		return url.handleError()
+		return handleError(url.error)
 	}
 
 	return request(url.value)
@@ -148,7 +137,7 @@ func hashFiles(listOfFiles []string) returnObject {
 	for _, file := range listOfFiles {
 		content := getFileContent(file)
 		if content.error != "" {
-			return content.handleError()
+			return handleError(content.error)
 		}
 
 		bigHush += hash(content.value)
