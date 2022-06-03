@@ -12,6 +12,7 @@ import (
 	"sync"
 )
 
+// port to listen on
 var port = "8080"
 
 // ApiGetFile is the structure of the json getFile object
@@ -32,6 +33,7 @@ type returnObject struct {
 var GitRef string
 var Branch string
 
+// handleError return the error
 func handleError(error string) returnObject {
 	return returnObject{
 		value: "",
@@ -39,10 +41,12 @@ func handleError(error string) returnObject {
 	}
 }
 
+// sendError send the error to the client
 func sendError(c *gin.Context, err string) {
 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
 }
 
+// getFileContent return the content of the file
 func getFileContent(fileName string) returnObject {
 	url := parseUrl(GitRef, Branch, fileName)
 	if url.error != "" {
@@ -52,6 +56,7 @@ func getFileContent(fileName string) returnObject {
 	return request(url.value)
 }
 
+// initialize the global variables
 func initialize() returnObject {
 	apiDetails := request("http://init_api:8081/details/")
 	if apiDetails.error != "" {
@@ -154,7 +159,7 @@ func hashFiles(listOfFiles []string) returnObject {
 		return handleError(getFileContentError)
 	}
 
-	// sum all the hashes
+	// sum up all the hashes
 	sumHush := ""
 	for _, hash := range arrayOfHashes {
 		sumHush += hash
