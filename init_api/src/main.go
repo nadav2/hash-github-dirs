@@ -8,6 +8,7 @@ import (
 var GitRef string
 var Branch string
 
+// port to listen on
 var port = "8081"
 
 // ApiStartPoint is the structure of the json initialize object
@@ -16,6 +17,7 @@ type ApiStartPoint struct {
 	Branch string `json:"branch"`
 }
 
+// CheckOutRef set the git ref and branch for the api
 func CheckOutRef(path string, branch string) {
 	GitRef = "https://github.com/" + path + ".git"
 
@@ -25,6 +27,7 @@ func CheckOutRef(path string, branch string) {
 	Branch = branch
 }
 
+// sendError send the error to the client
 func sendError(c *gin.Context, err string) {
 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
 }
