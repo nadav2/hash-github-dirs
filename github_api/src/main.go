@@ -35,6 +35,10 @@ func handleError(error string) returnObject {
 	}
 }
 
+func sendError(c *gin.Context, err string) {
+	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
+}
+
 func (r returnObject) handleError(err ...string) returnObject {
 
 	if len(err) == 1 {
@@ -157,13 +161,13 @@ func getFileApi(c *gin.Context) {
 	var details ApiGetFile
 
 	if c.BindJSON(&details) != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		sendError(c, "bad request")
 		return
 	}
 
 	fileContent := getFileContent(details.FileName)
 	if fileContent.error != "" {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fileContent.error})
+		sendError(c, fileContent.error)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{"fileContent": fileContent.value})
@@ -174,17 +178,17 @@ func hashFilesApi(c *gin.Context) {
 	var details ApiHashFiles
 
 	if c.BindJSON(&details) != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		sendError(c, "bad request")
 		return
 	}
 	if len(details.Files) == 0 {
-		c.IndentedJSON(http.StatusOK, gin.H{"error": "The request is invalid"})
+		sendError(c, "no files to hash")
 		return
 	}
 
 	sha := hashFiles(details.Files)
 	if sha.error != "" {
-		c.IndentedJSON(http.StatusOK, gin.H{"error": sha.error})
+		sendError(c, sha.error)
 		return
 	}
 
@@ -204,5 +208,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 }
