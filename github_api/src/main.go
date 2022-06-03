@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 var port = "8080"
@@ -28,6 +29,9 @@ type returnObject struct {
 	error string
 }
 
+var GitRef string
+var Branch string
+
 func handleError(error string) returnObject {
 	return returnObject{
 		value: "",
@@ -39,8 +43,16 @@ func sendError(c *gin.Context, err string) {
 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
 }
 
-
 func getFileContent(fileName string) returnObject {
+	url := parseUrl(GitRef, Branch, fileName)
+	if url.error != "" {
+		return handleError(url.error)
+	}
+
+	return request(url.value)
+}
+
+func initialize() returnObject {
 	apiDetails := request("http://init_api:8081/details/")
 	if apiDetails.error != "" {
 		return handleError(apiDetails.error)
@@ -52,15 +64,9 @@ func getFileContent(fileName string) returnObject {
 		return handleError(err)
 	}
 
-	GitRef := result["gitRef"]
-	Branch := result["branch"]
-
-	url := parseUrl(GitRef, Branch, fileName)
-	if url.error != "" {
-		return handleError(url.error)
-	}
-
-	return request(url.value)
+	GitRef = result["gitRef"]
+	Branch = result["branch"]
+	return returnObject{}
 }
 
 func stringToJson(jsonString string) (map[string]string, string) {
@@ -117,7 +123,7 @@ func request(url string) returnObject {
 	}
 
 	if err != nil {
-		return handleError("An error occurred")
+		return handleError(err.Error())
 	}
 
 	return returnObject{value: string(body)}
@@ -130,23 +136,55 @@ func hash(text string) string {
 	return fmt.Sprintf("%x", shaObject.Sum(nil))
 }
 
+var getFileContentError string
+
 // hash list of files
 func hashFiles(listOfFiles []string) returnObject {
-	bigHush := ""
+	getFileContentError = "" // reset the error
+	arrayOfHashes := make([]string, len(listOfFiles))
 
-	for _, file := range listOfFiles {
-		content := getFileContent(file)
-		if content.error != "" {
-			return handleError(content.error)
-		}
-
-		bigHush += hash(content.value)
+	var wg sync.WaitGroup
+	for i, file := range listOfFiles {
+		wg.Add(1)
+		go hashFile(file, i, arrayOfHashes, &wg)
 	}
-	return returnObject{value: hash(bigHush)}
+	wg.Wait()
+	
+	if getFileContentError != "" {
+		return handleError(getFileContentError)
+	}
+
+	// sum all the hashes
+	sumHush := ""
+	for _, hash := range arrayOfHashes {
+		sumHush += hash
+	}
+	return returnObject{value: hash(sumHush)}
+}
+
+// hash each file and add the hash to the array
+func hashFile(file string, index int, arrayOfHashes []string, wg *sync.WaitGroup) {
+	defer func() {
+		wg.Add(-1)
+	}()
+
+	if getFileContentError != "" {
+		return
+	}
+
+	content := getFileContent(file)
+	if content.error != "" {
+		getFileContentError = content.error
+		return
+	}
+	
+	arrayOfHashes[index] = hash(content.value)
 }
 
 // api to get file content from GitHub directory
 func getFileApi(c *gin.Context) {
+	initialize()
+
 	var details ApiGetFile
 
 	if c.BindJSON(&details) != nil {
@@ -164,6 +202,8 @@ func getFileApi(c *gin.Context) {
 
 // api to hash the content of the given list of files
 func hashFilesApi(c *gin.Context) {
+	initialize()
+
 	var details ApiHashFiles
 
 	if c.BindJSON(&details) != nil {
@@ -184,6 +224,8 @@ func hashFilesApi(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{"hash": sha.value})
 }
 
+
+
 // the main function start the api
 func main() {
 	router := gin.Default()
@@ -197,4 +239,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 }
