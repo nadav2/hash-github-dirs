@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"io"
 	"net/http"
 )
 
@@ -33,36 +32,34 @@ func sendError(c *gin.Context, err string) {
 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err})
 }
 
-
 func checkIfRepoExists(repo string, branch string) bool {
 	if branch == "" {
 		branch = "master"
 	}
 	url := "https://github.com/" + repo + "/tree/" + branch
-	
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return false
 	}
 
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(resp.Body)
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	return resp.StatusCode == 200
 }
 
-
 // initApi initialize the api
 func initApi(c *gin.Context) {
 	var details ApiStartPoint
-	
+
 	if c.BindJSON(&details) == nil {
 		if checkIfRepoExists(details.Ref, details.Branch) {
 			CheckOutRef(details.Ref, details.Branch)
 			c.IndentedJSON(http.StatusOK, gin.H{"message": "success"})
 		} else {
-			sendError(c, "Repo or branch does not exist")
+			sendError(c, "The GitRepo or branch does not exist")
 		}
 	} else {
 		sendError(c, "Invalid json")
